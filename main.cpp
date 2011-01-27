@@ -2,9 +2,6 @@
 #include "pngwriter.h"
 #include "base64.h"
 
-// exec time
-#include <ctime>
-
 // dir listing
 #include <dirent.h>
 #include <errno.h>
@@ -21,6 +18,8 @@ struct point {
 	int r, g, b;
 };
 
+
+// This is not cross platform, need to find a method for windows.
 int getdir (string dir, vector<string> &files)
 {
     DIR *dp;
@@ -112,9 +111,9 @@ int main(int argc, char *argv[])
 	if(not shush) cout << "By BenPhelps - www.benphelps.me\n\n";
 	if(not shush) cout << "World Directory: " << chunkDirectory << "\n";
 	if(not shush) cout << "Image Directory: " << imageDirectory << "\n";
-	if(not shush) cout << "Compression Level: " << compressionLevel << "\n\n";
-	if(greyScale) cout << "Saving images in greyscale.\n\n";
-	if(onlyHeightmap) cout << "Saving image height map only.\n\n";
+	if(not shush) cout << "Compression Level: " << compressionLevel << "\n";
+	if(greyScale) cout << "Saving images in greyscale.\n";
+	if(onlyHeightmap) cout << "Saving image height map only.\n";
 	
 	if(not shush) cout << "Loading Colors...\n";
 	// load colors
@@ -134,9 +133,6 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 	
-	if(not shush) cout << colorCount << " colors loaded!\n\n";
-	
-	
 	// loop over files
 	string dir = string(chunkDirectory.c_str());
     vector<string> files = vector<string>();
@@ -146,7 +142,6 @@ int main(int argc, char *argv[])
 	
 	if(not shush) cout << "Building heightmaps and creating chunk images...\n";
 	
-	int start = clock();
     for (unsigned int i = 0;i < files.size();i++) {
 		
 		string file = files[i];
@@ -156,6 +151,7 @@ int main(int argc, char *argv[])
 
 		// check if we are a proper chunk file
 		if (cordMatch != 3){
+			cout << "Warning: " << file.c_str() << " does not have proper file naming.  Ignoring.\n";
 			continue;
 		}
 		
@@ -198,8 +194,8 @@ int main(int argc, char *argv[])
 						bFoundWater = true;
 					}
 				}
-				// if we found water at this X, Z then set the depth to the
-				// int we set in the loop
+				// if we found water at this X, Z !AND! the top block is water
+				// then set the depth to the int we set in the loop
 				if (bFoundWater == true and topBlock == 8 or topBlock == 9) {
 					depth[x][z] = waterDepth;
 				}
@@ -243,9 +239,7 @@ int main(int argc, char *argv[])
 		
 		total_chunks++;
     }
-	float elapsed = (clock() - start) / 1000000.0f;
-	
-	
+
 	if (createBlank) {
 		// the blank.png file
 		std::string decoded = base64_decode(
@@ -257,11 +251,8 @@ int main(int argc, char *argv[])
 		blankPNG.close();
 	}
 	
-	float cps = total_chunks / elapsed;
 	
-	if(not shush) cout << "\nProcessed " << total_chunks << " chunks. " << cps << " chunks per second!\n";
-	if(not shush) cout << "Took " << elapsed << " seconds.\n";
-	
+	if(not shush) cout << "Processed " << total_chunks << " chunks.\n";
 	if(not shush) cout << "Done!\n\n";
 	
 	return 0;
