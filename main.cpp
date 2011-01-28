@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
 		}
 		else if ( strcmp(argv[i], "-h") == 0 or strcmp(argv[i], "--help") == 0 ) {
 			cout << "\nUsage:\n  MCMapper -i <worldDirectory> -o <imageDirectory> [-gs] [-nb] [-q] [-h]\n\n";
-			cout << "-i          Input Directory, contains world cunks.\n";
+			cout << "-i          Input Directory, contains world chunks.\n";
 			cout << "            Default: world\n";
 			cout << "-o          Output Directory, chunk images are saved here.\n";
 			cout << "            Default: images\n";
@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
 			cout << "Output Options:\n";
 			cout << "-hm         Save only the height map.\n";
 			cout << "-gs         Save images in greyscale.\n";
-			cout << "-d          Save a desnity file along with the images.\n\n";
+			cout << "-d          Save a density file along with the images.\n\n";
 			return 0;
 		}
 		else {
