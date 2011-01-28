@@ -13,7 +13,6 @@
 #include "base64.h"
 
 // dir listing
-#include <dirent.h>
 #include <errno.h>
 #include <vector>
 
@@ -37,6 +36,7 @@ struct point {
 
 
 #ifndef _WIN32
+#include <dirent.h>
 int getdir (string dir, vector<string> &files)
 {
     DIR *dp;
@@ -73,7 +73,7 @@ void getdir (string dir, vector<string> &files)
 
 int main(int argc, char *argv[])
 {
-
+	
 	string chunkDirectory = "world/";
 	string imageDirectory = "images/";
 	string outputColor = "color";
@@ -113,14 +113,14 @@ int main(int argc, char *argv[])
 		}
 		else if ( strcmp(argv[i], "-c") == 0) {
 			int level = atoi(argv[i+1]);
-			if(level >= 0 and level <= 9){
+			if(level >= 0 && level <= 9){
 				compressionLevel = level;
 			}
 		}
 		else if ( strcmp(argv[i], "-d") == 0) {
 			densityFile = true;
 		}
-		else if ( strcmp(argv[i], "-h") == 0 or strcmp(argv[i], "--help") == 0 ) {
+		else if ( strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0 ) {
 			cout << "\nUsage:\n  MCMapper -i <worldDirectory> -o <imageDirectory> [-gs] [-nb] [-q] [-h]\n\n";
 			cout << "-i          Input Directory, contains world chunks.\n";
 			cout << "            Default: world\n";
@@ -145,14 +145,14 @@ int main(int argc, char *argv[])
 		
 	}
 	
-	if(not shush) cout << "\nMCMapper - 2D Mapping for MCServer\n";
-	if(not shush) cout << "By BenPhelps - www.benphelps.me\n\n";
-	if(not shush) cout << "World Directory: " << chunkDirectory << "\n";
-	if(not shush) cout << "Image Directory: " << imageDirectory << "\n";
-	if(not shush) cout << "Compression Level: " << compressionLevel << "\n";
+	if(!shush) cout << "\nMCMapper - 2D Mapping for MCServer\n";
+	if(!shush) cout << "By BenPhelps - www.benphelps.me\n\n";
+	if(!shush) cout << "World Directory: " << chunkDirectory << "\n";
+	if(!shush) cout << "Image Directory: " << imageDirectory << "\n";
+	if(!shush) cout << "Compression Level: " << compressionLevel << "\n";
 	if(greyScale) cout << "Saving images in greyscale.\n";
 	if(onlyHeightmap) cout << "Saving image height map only.\n";
-
+	
 	// check for colors files
 	ifstream color_file(colorFile.c_str(), std::ios::in);
 	if( !color_file.good() )
@@ -185,15 +185,15 @@ int main(int argc, char *argv[])
 	int total_chunks = 0;
 	unsigned int density[128];
 	
-	if(not shush) cout << "Building heightmaps and creating chunk images...\n";
+	if(!shush) cout << "Building heightmaps and creating chunk images...\n";
 	
     for (unsigned int i = 0;i < files.size();i++) {
 		
 		string file = files[i];
-
+		
 		int chunkX, chunkY, chunkZ;
 		int cordMatch = sscanf_s( file.c_str(), "X%d_Y%d_Z%d.bin", &chunkX, &chunkY, &chunkZ );
-
+		
 		// check if we are a proper chunk file
 		if (cordMatch != 3){
 			continue;
@@ -208,13 +208,13 @@ int main(int argc, char *argv[])
 		ifstream chunk;
 		string fopen = chunkDirectory + file;
 		chunk.open (fopen.c_str(), ios::binary);
-
+		
 		char * data;
 		data = new char [32768];
 		
 		chunk.read (data,32768);
 		chunk.close();
-
+		
 		// build a height map
 		for (int x=0; x < 16; x++) { 
 			for (int z=0; z < 16; z++) { 	
@@ -234,14 +234,14 @@ int main(int argc, char *argv[])
 					}
 					
 					// set the first block we find of water to the water depth
-					if (block == 8 or block == 9 and bFoundWater == false) {
+					if (block == 8 || block == 9 && bFoundWater == false) {
 						waterDepth = y;
 						bFoundWater = true;
 					}
 				}
 				// if we found water at this X, Z !AND! the top block is water
 				// then set the depth to the int we set in the loop
-				if (bFoundWater == true and topBlock == 8 or topBlock == 9) {
+				if (bFoundWater == true && topBlock == 8 || topBlock == 9) {
 					depthMap[x][z] = waterDepth;
 				}
 			}
@@ -249,7 +249,7 @@ int main(int argc, char *argv[])
 		
 		// clear the file data
 		delete[] data;
-
+		
 		// the file name of the new png
 		char pngName[16];
 		sprintf_s( pngName, 16, "%i-%i.png", chunkX, chunkZ );
@@ -284,12 +284,12 @@ int main(int argc, char *argv[])
 		
 		total_chunks++;
     }
-
+	
 	if (createBlank) {
 		// the blank.png file
 		std::string decoded = base64_decode(
-		"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAAnRFWHROQXHJZTwAAAATSURBVHjaYmAYBaNgFMAAQIABAAMQAAGxh94UAAAAAElFTkSuQmCC"
-										);
+											"iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAAnRFWHROQXHJZTwAAAATSURBVHjaYmAYBaNgFMAAQIABAAMQAAGxh94UAAAAAElFTkSuQmCC"
+											);
 		string blankPNGf = imageDirectory + string("/") + string("blank.png");
 		ofstream blankPNG(blankPNGf.c_str() ,ofstream::binary);
 		blankPNG.write (decoded.c_str(), 90);
@@ -318,8 +318,8 @@ int main(int argc, char *argv[])
 		densityFileH.close();
 	}
 	
-	if(not shush) cout << "Processed " << total_chunks << " chunks.\n";
-	if(not shush) cout << "Done!\n\n";
+	if(!shush) cout << "Processed " << total_chunks << " chunks.\n";
+	if(!shush) cout << "Done!\n\n";
 	
 	return 0;
 }
