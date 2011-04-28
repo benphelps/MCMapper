@@ -44,7 +44,7 @@ float GetNoise( float x, float y )
 	float oct2 = m_Noise.CubicNoise2D( x*1.000000, y*1.000000 )*0.500000;
 	float oct3 = m_Noise.CubicNoise2D( x*2.000000, y*2.000000 )*0.500000;
 	
-	float height = m_Noise.CubicNoise2D( x*0.1f, y*0.1f )*2;
+	float height = m_Noise.CosineNoise2D( x*0.1f, y*0.1f )*2;
 	
 	float flatness = ((m_Noise.CubicNoise2D( x*0.5f, y*0.5f ) + 1.f ) * 0.5f) * 1.1f; // 0 ... 1.5
 	flatness *= flatness * flatness;
@@ -73,9 +73,25 @@ int main(int argc, char *argv[])
 				int worldX = mX * 16 + x;
 				for (int y = 0; y < 16; y++) {
 					int worldY = mY * 16 + y;
-					int height = (int)(GetNoise( worldX*0.05f, worldY*0.05f )*16);
-					float scale = abs((height*16)) / 255.0f;
-					image.plot(worldX+1, worldY+1, scale, scale, scale);
+					int height = (float)(GetNoise( worldX*0.05f, worldY*0.05f )*16);
+					float scale = ((height*-1*16) / 255.0f - -1.0f) * 1.0f / 2;
+					
+					const int lower = 64;
+					const int top = lower+height;
+					//cout << lower - height - top << "\n";
+					if (lower - height - top > 3.0f && lower - height - top < 5.0f) {
+						image.plot(worldX+1, worldY+1, scale, scale, 0.0f);
+					}
+					else if (lower - height - top < 5.0f) {
+						image.plot(worldX+1, worldY+1, 0.0f, 0.0f, scale);
+					}
+					else {
+						
+						image.plot(worldX+1, worldY+1, 0.0f, scale, 0.0f);
+					}
+
+					
+					
 				}
 			}
 			
