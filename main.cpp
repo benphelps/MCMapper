@@ -86,7 +86,6 @@ int main(int argc, char *argv[])
 						image.plot(worldX+1, worldY+1, 0.0f, 0.0f, scale);
 					}
 					else {
-						
 						image.plot(worldX+1, worldY+1, 0.0f, scale, 0.0f);
 					}
 
